@@ -1,0 +1,882 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Campo de Glória</title>
+<style>
+  @import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&family=Barlow+Condensed:wght@400;600;700&family=Barlow:wght@400;500&display=swap');
+
+  :root {
+    --gold: #D4AF37;
+    --gold-light: #F0D060;
+    --gold-glow: rgba(212,175,55,0.35);
+    --dark: #0A0A0A;
+    --dark2: #111;
+    --dark3: #1A1A1A;
+    --dark4: #242424;
+    --mid: #333;
+    --light: #EDE5D0;
+    --muted: #7A6E5A;
+    --green: #2ECC71;
+    --green-glow: rgba(46,204,113,0.3);
+    --red: #E74C3C;
+    --red-glow: rgba(231,76,60,0.3);
+    --blue: #3498DB;
+  }
+
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+
+  body {
+    background: var(--dark);
+    color: var(--light);
+    font-family: 'Barlow', sans-serif;
+    width: 340px;
+    min-height: 560px;
+    overflow-x: hidden;
+    overflow-y: auto;
+    position: relative;
+  }
+
+  body::before {
+    content: '';
+    position: fixed;
+    inset: 0;
+    background-image:
+      linear-gradient(rgba(212,175,55,0.02) 1px, transparent 1px),
+      linear-gradient(90deg, rgba(212,175,55,0.02) 1px, transparent 1px);
+    background-size: 32px 32px;
+    pointer-events: none;
+    z-index: 0;
+  }
+
+  .content { position: relative; z-index: 1; padding: 14px 14px 20px; }
+
+  /* HEADER */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 14px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid var(--dark4);
+  }
+  .header-left { line-height: 1; }
+  .header-eyebrow {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px;
+    letter-spacing: 4px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 2px;
+  }
+  .header-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 28px;
+    letter-spacing: 5px;
+    color: var(--gold);
+    text-shadow: 0 0 30px var(--gold-glow);
+    line-height: 1;
+  }
+  .header-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-top: 1px;
+  }
+
+  /* SEC LABEL */
+  .sec-label {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--gold);
+    margin-bottom: 8px;
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    opacity: 0.8;
+  }
+  .sec-label::after { content:''; flex:1; height:1px; background:var(--dark4); }
+
+  /* POOL PIPS */
+  .pool-pips {
+    display: flex;
+    gap: 5px;
+    flex-wrap: wrap;
+    margin-bottom: 6px;
+  }
+  .pip-btn {
+    width: 26px;
+    height: 26px;
+    border: 1.5px solid var(--mid);
+    background: var(--dark3);
+    cursor: pointer;
+    transition: all 0.1s;
+    position: relative;
+    flex-shrink: 0;
+    padding: 0;
+  }
+  .pip-btn::after {
+    content: '';
+    position: absolute;
+    inset: 4px;
+    background: var(--mid);
+    transition: all 0.1s;
+  }
+  .pip-btn.filled { border-color: var(--gold); background: rgba(212,175,55,0.06); }
+  .pip-btn.filled::after { background: var(--gold); box-shadow: 0 0 6px var(--gold-glow); }
+  .pip-btn:hover { border-color: var(--gold-light); }
+  .pool-label {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    margin-bottom: 12px;
+  }
+  .pool-label span { color: var(--gold); font-family: 'Bebas Neue'; font-size: 15px; }
+
+  /* MOD ROW */
+  .mod-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    margin-bottom: 12px;
+  }
+  .mod-group {
+    background: var(--dark3);
+    border: 1px solid var(--dark4);
+    padding: 8px 10px;
+  }
+  .mod-title {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px;
+    font-weight: 700;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin-bottom: 6px;
+  }
+  .mod-title.v { color: var(--green); }
+  .mod-title.d { color: var(--red); }
+  .mod-counter { display: flex; align-items: center; }
+  .mc-btn {
+    background: none;
+    border: 1px solid var(--mid);
+    color: var(--light);
+    font-family: 'Bebas Neue', cursive;
+    font-size: 18px;
+    width: 26px;
+    height: 26px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background 0.1s;
+    line-height: 1;
+    padding: 0;
+  }
+  .mc-btn:hover { background: var(--dark4); }
+  .mc-val {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 24px;
+    width: 36px;
+    text-align: center;
+    border-top: 1px solid var(--mid);
+    border-bottom: 1px solid var(--mid);
+    line-height: 26px;
+  }
+  .mc-val.v { color: var(--green); }
+  .mc-val.d { color: var(--red); }
+  .mc-val.z { color: var(--muted); }
+
+  /* ROLL TYPE */
+  .rt-row { display: flex; gap: 6px; margin-bottom: 10px; }
+  .rt-btn {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    font-weight: 700;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    padding: 5px 12px;
+    border: 1px solid var(--mid);
+    background: var(--dark3);
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .rt-btn:hover { border-color: var(--gold); color: var(--light); }
+  .rt-btn.active { border-color: var(--gold); background: rgba(212,175,55,0.07); color: var(--gold); }
+
+  /* PREVIEW */
+  .pool-preview {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    margin-bottom: 12px;
+    text-align: center;
+    min-height: 16px;
+  }
+  .pool-preview strong { color: var(--light); }
+  .fantasma-tag {
+    color: var(--blue);
+    border: 1px solid rgba(52,152,219,0.35);
+    padding: 0 5px;
+    font-size: 9px;
+    letter-spacing: 1px;
+    margin-left: 5px;
+    vertical-align: middle;
+  }
+
+  /* ROLL BUTTON */
+  .roll-btn {
+    width: 100%;
+    background: var(--gold);
+    border: none;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 24px;
+    letter-spacing: 6px;
+    color: var(--dark);
+    padding: 12px;
+    cursor: pointer;
+    transition: background 0.15s, transform 0.1s;
+    margin-bottom: 12px;
+  }
+  .roll-btn:hover { background: var(--gold-light); }
+  .roll-btn:active { transform: scale(0.985); }
+  .roll-btn.rolling {
+    background: var(--dark4);
+    color: var(--gold);
+    border: 1px solid var(--gold);
+    pointer-events: none;
+    letter-spacing: 4px;
+  }
+
+  /* DICE DISPLAY */
+  .dice-display {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 6px;
+    justify-content: center;
+    min-height: 52px;
+    padding: 10px;
+    background: var(--dark2);
+    border: 1px solid var(--mid);
+    margin-bottom: 8px;
+    align-items: center;
+  }
+  .die {
+    width: 42px;
+    height: 42px;
+    border: 2px solid var(--mid);
+    background: var(--dark3);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 24px;
+    color: var(--light);
+    position: relative;
+    flex-shrink: 0;
+  }
+  .die.success { border-color: var(--green); background: rgba(46,204,113,0.09); color: var(--green); box-shadow: 0 0 8px rgba(46,204,113,0.15); }
+  .die.fail    { border-color: var(--dark4); color: var(--muted); }
+  .die.fantasma-show { border-color: var(--blue); border-style: dashed; color: var(--blue); }
+  .die.fantasma-used { border-color: var(--red); background: rgba(231,76,60,0.09); color: var(--red); }
+  .die.rolling-anim  { animation: dRoll 0.1s infinite alternate; }
+  @keyframes dRoll { from { transform: rotate(-8deg) scale(0.92); } to { transform: rotate(8deg) scale(1.06); } }
+  .die-sublabel {
+    position: absolute;
+    bottom: -13px;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 7px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    white-space: nowrap;
+    color: var(--muted);
+  }
+  .empty-msg {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    letter-spacing: 2px;
+    color: var(--muted);
+    text-transform: uppercase;
+    font-style: italic;
+  }
+
+  /* RESULT SUMMARY */
+  .result-summary {
+    background: var(--dark2);
+    border: 1px solid var(--mid);
+    border-top: 3px solid var(--dark4);
+    padding: 10px 12px;
+    margin-bottom: 10px;
+    transition: border-top-color 0.2s;
+  }
+  .result-summary.suc  { border-top-color: var(--green); }
+  .result-summary.fail { border-top-color: var(--red); }
+  .result-summary.fant { border-top-color: var(--blue); }
+  .result-top { display: flex; align-items: center; justify-content: space-between; margin-bottom: 6px; }
+  .suc-count {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 48px;
+    line-height: 1;
+    color: var(--muted);
+    transition: color 0.2s;
+  }
+  .suc-count.has  { color: var(--green); }
+  .suc-count.none { color: var(--red); }
+  .suc-count.fant { color: var(--blue); }
+  .result-right { text-align: right; }
+  .rml {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 20px;
+    letter-spacing: 3px;
+    line-height: 1;
+  }
+  .rml-green  { color: var(--green); }
+  .rml-red    { color: var(--red); }
+  .rml-gold   { color: var(--gold); }
+  .rml-blue   { color: var(--blue); }
+  .rml-muted  { color: var(--muted); }
+  .result-detail {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    letter-spacing: 1px;
+    color: var(--muted);
+    text-transform: uppercase;
+    margin-top: 2px;
+  }
+  .breakdown { display: flex; gap: 4px; flex-wrap: wrap; }
+  .bi {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 10px;
+    letter-spacing: 1px;
+    padding: 2px 6px;
+    border: 1px solid;
+    text-transform: uppercase;
+  }
+  .bi-g    { border-color: rgba(46,204,113,0.3); color: var(--green); background: rgba(46,204,113,0.04); }
+  .bi-r    { border-color: var(--dark4); color: var(--muted); }
+  .bi-b    { border-color: rgba(52,152,219,0.3); color: var(--blue); }
+  .bi-gold { border-color: rgba(212,175,55,0.3); color: var(--gold); }
+
+  /* CRÍTICO OVERLAY */
+  .critico-overlay {
+    position: fixed;
+    inset: 0;
+    z-index: 100;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: opacity 0.2s;
+  }
+  .critico-overlay.show { opacity: 1; pointer-events: auto; }
+  .critico-overlay .bg { position: absolute; inset: 0; background: rgba(0,0,0,0.9); }
+  .critico-box {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    padding: 32px 40px;
+    border: 2px solid var(--gold);
+    background: var(--dark2);
+    max-width: 280px;
+    width: 90%;
+    animation: critZoom 0.3s cubic-bezier(0.17,0.67,0.38,1.3) forwards;
+  }
+  .critico-box.falha-critica { border-color: var(--red); }
+  @keyframes critZoom {
+    from { transform: scale(0.6); opacity: 0; }
+    to   { transform: scale(1); opacity: 1; }
+  }
+  .crit-deco {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 60px;
+    line-height: 0.9;
+    margin-bottom: 6px;
+    text-shadow: 0 0 40px currentColor;
+  }
+  .crit-deco.gold { color: var(--gold); }
+  .crit-deco.red  { color: var(--red); }
+  .crit-title {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 34px;
+    letter-spacing: 5px;
+    line-height: 1;
+    margin-bottom: 6px;
+  }
+  .crit-title.gold { color: var(--gold); text-shadow: 0 0 20px var(--gold-glow); }
+  .crit-title.red  { color: var(--red);  text-shadow: 0 0 20px var(--red-glow); }
+  .crit-sub {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 12px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    margin-bottom: 16px;
+  }
+  .crit-dice { display: flex; gap: 6px; justify-content: center; margin-bottom: 16px; flex-wrap: wrap; }
+  .crit-die {
+    width: 38px;
+    height: 38px;
+    border: 2px solid;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-family: 'Bebas Neue', cursive;
+    font-size: 22px;
+  }
+  .crit-die.gold-die { border-color: var(--gold); color: var(--gold); background: rgba(212,175,55,0.08); }
+  .crit-die.red-die  { border-color: var(--red); color: var(--red); background: rgba(231,76,60,0.08); }
+  .crit-close {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 14px;
+    letter-spacing: 3px;
+    padding: 8px 24px;
+    border: 1px solid var(--mid);
+    background: none;
+    color: var(--muted);
+    cursor: pointer;
+    transition: all 0.15s;
+  }
+  .crit-close:hover { border-color: var(--light); color: var(--light); }
+
+  /* PARTICLES */
+  .particles {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 99;
+    overflow: hidden;
+  }
+  .particle {
+    position: absolute;
+    border-radius: 50%;
+    animation: particleFall linear forwards;
+    opacity: 0;
+  }
+  @keyframes particleFall {
+    0%   { transform: translateY(-10px) rotate(0deg); opacity: 1; }
+    100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+  }
+
+  /* HISTORY */
+  .history-section { margin-top: 4px; }
+  .history-top {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 5px;
+  }
+  .history-ttl {
+    font-family: 'Bebas Neue', cursive;
+    font-size: 10px;
+    letter-spacing: 3px;
+    color: var(--muted);
+  }
+  .history-clr {
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 9px;
+    letter-spacing: 1.5px;
+    text-transform: uppercase;
+    color: var(--muted);
+    background: none;
+    border: 1px solid var(--dark4);
+    padding: 2px 8px;
+    cursor: pointer;
+    transition: all 0.1s;
+  }
+  .history-clr:hover { border-color: var(--red); color: var(--red); }
+  .history-list { display: flex; flex-direction: column; gap: 3px; }
+  .hi {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    background: var(--dark2);
+    border: 1px solid var(--dark4);
+    padding: 5px 8px;
+    font-family: 'Barlow Condensed', sans-serif;
+    font-size: 11px;
+    animation: slideIn 0.15s ease;
+  }
+  @keyframes slideIn { from { opacity:0; transform:translateX(-4px); } to { opacity:1; } }
+  .hi-suc { font-family:'Bebas Neue'; font-size:16px; width:18px; flex-shrink:0; }
+  .hi-suc.has  { color: var(--green); }
+  .hi-suc.none { color: var(--red); }
+  .hi-suc.fant { color: var(--blue); }
+  .hi-pool { color: var(--gold); font-size:11px; flex-shrink:0; letter-spacing:1px; }
+  .hi-dice { color: var(--muted); flex:1; font-size:10px; }
+  .hi-tag {
+    font-size: 8px;
+    letter-spacing: 1px;
+    text-transform: uppercase;
+    padding: 1px 4px;
+    border: 1px solid;
+    flex-shrink: 0;
+  }
+  .hi-tag.suc   { border-color: rgba(46,204,113,0.3); color: var(--green); }
+  .hi-tag.fail  { border-color: var(--dark4); color: var(--muted); }
+  .hi-tag.crit  { border-color: var(--gold); color: var(--gold); }
+  .hi-tag.fcrit { border-color: var(--red); color: var(--red); }
+  .hi-tag.fant  { border-color: rgba(52,152,219,0.3); color: var(--blue); }
+</style>
+</head>
+<body>
+
+<!-- CRÍTICO OVERLAY -->
+<div class="critico-overlay" id="crit-overlay" onclick="closeCrit()">
+  <div class="bg"></div>
+  <div class="critico-box" id="crit-box">
+    <div class="crit-deco" id="crit-deco">✦</div>
+    <div class="crit-title" id="crit-title">CRÍTICO</div>
+    <div class="crit-sub" id="crit-sub">Todos os dados são sucessos</div>
+    <div class="crit-dice" id="crit-dice"></div>
+    <button class="crit-close" onclick="closeCrit()">FECHAR</button>
+  </div>
+</div>
+<div class="particles" id="particles"></div>
+
+<div class="content">
+
+  <!-- HEADER -->
+  <div class="header">
+    <div class="header-left">
+      <div class="header-eyebrow">Campo de Glória · D6 Pool</div>
+      <div class="header-title">ROLAGEM</div>
+      <div class="header-sub">Sucesso = 4 · 5 · 6</div>
+    </div>
+  </div>
+
+  <!-- POOL -->
+  <div class="sec-label">Pool de Dados</div>
+  <div class="pool-pips" id="pool-pips"></div>
+  <div class="pool-label">Atributo: <span id="pool-num">3</span>d6</div>
+
+  <!-- MODIFICADORES -->
+  <div class="sec-label">Modificadores</div>
+  <div class="mod-row">
+    <div class="mod-group">
+      <div class="mod-title v">Vantagem</div>
+      <div class="mod-counter">
+        <button class="mc-btn" onclick="changeVantagem(-1)">−</button>
+        <div class="mc-val v z" id="v-val">0</div>
+        <button class="mc-btn" onclick="changeVantagem(1)">+</button>
+      </div>
+    </div>
+    <div class="mod-group">
+      <div class="mod-title d">Desvantagem</div>
+      <div class="mod-counter">
+        <button class="mc-btn" onclick="changeDesvantagem(-1)">−</button>
+        <div class="mc-val d z" id="d-val">0</div>
+        <button class="mc-btn" onclick="changeDesvantagem(1)">+</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- MODO -->
+  <div class="sec-label">Modo</div>
+  <div class="rt-row">
+    <div class="rt-btn active" id="rt-normal" onclick="setRollType('normal')">Normal</div>
+    <div class="rt-btn" id="rt-fantasma" onclick="setRollType('fantasma')">Dados Fantasma</div>
+  </div>
+
+  <!-- PREVIEW -->
+  <div class="pool-preview" id="pool-preview"></div>
+
+  <!-- ROLAR -->
+  <button class="roll-btn" id="roll-btn" onclick="rolar()">ROLAR</button>
+
+  <!-- RESULT -->
+  <div class="dice-display" id="dice-display">
+    <span class="empty-msg">Aperte ROLAR para começar</span>
+  </div>
+  <div class="result-summary" id="result-summary">
+    <div class="result-top">
+      <div>
+        <div style="font-family:'Barlow Condensed';font-size:8px;letter-spacing:2px;text-transform:uppercase;color:var(--muted);margin-bottom:1px;">Sucessos</div>
+        <div class="suc-count" id="suc-count">—</div>
+      </div>
+      <div class="result-right">
+        <div class="rml rml-muted" id="rml">Aguardando</div>
+        <div class="result-detail" id="r-detail">Pool base · Sucesso: 4, 5 ou 6</div>
+      </div>
+    </div>
+    <div class="breakdown" id="breakdown"></div>
+  </div>
+
+  <!-- HISTORY -->
+  <div class="history-section">
+    <div class="history-top">
+      <div class="history-ttl">Histórico</div>
+      <button class="history-clr" onclick="clearHistory()">Limpar</button>
+    </div>
+    <div class="history-list" id="history-list">
+      <div style="font-family:'Barlow Condensed';font-size:11px;letter-spacing:2px;color:var(--muted);text-align:center;padding:8px;text-transform:uppercase;font-style:italic;">Nenhuma rolagem ainda</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+  let pool = 3, vantagem = 0, desvantagem = 0, rollType = 'normal';
+  let history = [], isRolling = false;
+  const MAX_POOL = 10;
+
+  function buildPoolPips() {
+    const wrap = document.getElementById('pool-pips');
+    wrap.innerHTML = '';
+    for (let i = 1; i <= MAX_POOL; i++) {
+      const btn = document.createElement('button');
+      btn.className = 'pip-btn' + (i <= pool ? ' filled' : '');
+      btn.title = i + 'd6';
+      btn.onclick = () => setPool(i);
+      wrap.appendChild(btn);
+    }
+    document.getElementById('pool-num').textContent = pool;
+    updatePreview();
+  }
+
+  function setPool(n) {
+    pool = Math.max(1, Math.min(MAX_POOL, n));
+    buildPoolPips();
+  }
+
+  function changeVantagem(d) {
+    vantagem = Math.max(0, Math.min(8, vantagem + d));
+    const el = document.getElementById('v-val');
+    el.textContent = vantagem;
+    el.className = 'mc-val v' + (vantagem === 0 ? ' z' : '');
+    updatePreview();
+  }
+
+  function changeDesvantagem(d) {
+    desvantagem = Math.max(0, Math.min(8, desvantagem + d));
+    const el = document.getElementById('d-val');
+    el.textContent = desvantagem;
+    el.className = 'mc-val d' + (desvantagem === 0 ? ' z' : '');
+    updatePreview();
+  }
+
+  function setRollType(t) {
+    rollType = t;
+    document.getElementById('rt-normal').classList.toggle('active', t === 'normal');
+    document.getElementById('rt-fantasma').classList.toggle('active', t === 'fantasma');
+    updatePreview();
+  }
+
+  function getFinalPool() { return Math.max(0, pool + vantagem - desvantagem); }
+  function isFantasmaMode() { return rollType === 'fantasma' || getFinalPool() <= 0; }
+
+  function updatePreview() {
+    const fp = getFinalPool();
+    const fant = isFantasmaMode();
+    const el = document.getElementById('pool-preview');
+    let txt = `<strong>${pool}d6</strong>`;
+    let parts = [];
+    if (vantagem > 0) parts.push(`<span style="color:var(--green)">+${vantagem}</span>`);
+    if (desvantagem > 0) parts.push(`<span style="color:var(--red)">−${desvantagem}</span>`);
+    if (parts.length) txt += ' ' + parts.join(' ') + ` = <strong style="color:${fp<=0?'var(--red)':'var(--light)'}">${fp}d6</strong>`;
+    if (fant) txt += `<span class="fantasma-tag">FANTASMA</span>`;
+    el.innerHTML = txt;
+  }
+
+  function d6() { return Math.floor(Math.random() * 6) + 1; }
+
+  function rolar() {
+    if (isRolling) return;
+    isRolling = true;
+    const btn = document.getElementById('roll-btn');
+    btn.classList.add('rolling');
+    btn.textContent = 'ROLANDO...';
+
+    const fant = isFantasmaMode();
+    const count = fant ? 2 : (getFinalPool() || 1);
+    const container = document.getElementById('dice-display');
+    container.innerHTML = '';
+
+    const tempDice = [];
+    for (let i = 0; i < count; i++) {
+      const die = document.createElement('div');
+      die.className = 'die rolling-anim';
+      die.textContent = d6();
+      container.appendChild(die);
+      tempDice.push(die);
+    }
+
+    let ticks = 0;
+    const iv = setInterval(() => {
+      ticks++;
+      tempDice.forEach(d => { d.textContent = d6(); });
+      if (ticks >= 8) {
+        clearInterval(iv);
+        const rolls = tempDice.map(() => d6());
+        showResult(rolls, fant);
+        isRolling = false;
+        btn.classList.remove('rolling');
+        btn.textContent = 'ROLAR';
+      }
+    }, 55);
+  }
+
+  function showResult(rolls, fant) {
+    const container = document.getElementById('dice-display');
+    container.innerHTML = '';
+
+    if (fant) {
+      const wi = rolls.indexOf(Math.min(...rolls));
+      rolls.forEach((val, i) => {
+        const die = document.createElement('div');
+        die.className = 'die ' + (i === wi ? 'fantasma-used' : 'fantasma-show');
+        die.textContent = val;
+        const lbl = document.createElement('span');
+        lbl.className = 'die-sublabel';
+        lbl.textContent = i === wi ? 'usado' : 'descartado';
+        die.appendChild(lbl);
+        container.appendChild(die);
+      });
+      const usedVal = rolls[wi];
+      const suc = usedVal >= 4 ? 1 : 0;
+      updateSummary(suc, [usedVal], true, rolls);
+      addHistory(suc, [usedVal], rolls, true);
+    } else {
+      rolls.forEach(val => {
+        const die = document.createElement('div');
+        die.className = 'die ' + (val >= 4 ? 'success' : 'fail');
+        die.textContent = val;
+        container.appendChild(die);
+      });
+      const suc = rolls.filter(v => v >= 4).length;
+      updateSummary(suc, rolls, false, []);
+      addHistory(suc, rolls, [], false);
+
+      if (rolls.length >= 2 && rolls.every(v => v >= 4)) showCritico(rolls, false);
+      if (rolls.length >= 2 && rolls.every(v => v < 4))  showCritico(rolls, true);
+    }
+  }
+
+  function updateSummary(suc, rolls, fant, raw) {
+    const sc  = document.getElementById('suc-count');
+    const rl  = document.getElementById('rml');
+    const sum = document.getElementById('result-summary');
+    const bd  = document.getElementById('breakdown');
+    const det = document.getElementById('r-detail');
+
+    sc.textContent = suc;
+    sc.className = 'suc-count ' + (fant ? 'fant' : suc > 0 ? 'has' : 'none');
+
+    if (fant) {
+      rl.className = 'rml rml-blue';
+      rl.textContent = suc > 0 ? 'FANTASMA — SUC' : 'FANTASMA — FALHA';
+      sum.className = 'result-summary fant';
+    } else if (suc === 0) {
+      rl.className = 'rml rml-red';
+      rl.textContent = 'FALHA';
+      sum.className = 'result-summary fail';
+    } else if (suc === rolls.length && rolls.length >= 2) {
+      rl.className = 'rml rml-gold';
+      rl.textContent = 'CRÍTICO';
+      sum.className = 'result-summary suc';
+    } else {
+      rl.className = 'rml rml-green';
+      rl.textContent = suc === 1 ? 'SUCESSO' : suc + ' SUCESSOS';
+      sum.className = 'result-summary suc';
+    }
+
+    if (fant) {
+      bd.innerHTML = `<span class="bi bi-b">Pior: ${rolls[0]}</span><span class="bi bi-b">Rolados: [${raw.join(', ')}]</span>`;
+    } else {
+      const fails = rolls.filter(v => v < 4).length;
+      bd.innerHTML = `<span class="bi bi-g">✓ ${suc} suc.</span><span class="bi bi-r">✕ ${fails} falha${fails!==1?'s':''}</span><span class="bi bi-gold">[${rolls.join(', ')}]</span>`;
+    }
+
+    const fp = getFinalPool();
+    det.textContent = `Pool: ${pool}d6 · Final: ${fant ? 'Fantasma' : fp + 'd6'} · Suc: 4+`;
+  }
+
+  function showCritico(rolls, isFalha) {
+    const overlay = document.getElementById('crit-overlay');
+    const box     = document.getElementById('crit-box');
+    const deco    = document.getElementById('crit-deco');
+    const title   = document.getElementById('crit-title');
+    const sub     = document.getElementById('crit-sub');
+    const diceEl  = document.getElementById('crit-dice');
+
+    if (isFalha) {
+      box.className = 'critico-box falha-critica';
+      deco.className = 'crit-deco red'; deco.textContent = '✕';
+      title.className = 'crit-title red'; title.textContent = 'FALHA CRÍTICA';
+      sub.textContent = 'Nenhum dado foi sucesso';
+    } else {
+      box.className = 'critico-box';
+      deco.className = 'crit-deco gold'; deco.textContent = '✦';
+      title.className = 'crit-title gold'; title.textContent = 'CRÍTICO';
+      sub.textContent = 'Todos os dados são sucessos';
+      spawnParticles();
+    }
+
+    diceEl.innerHTML = rolls.map(v =>
+      `<div class="crit-die ${isFalha ? 'red-die' : 'gold-die'}">${v}</div>`
+    ).join('');
+
+    overlay.classList.add('show');
+    setTimeout(() => { if (overlay.classList.contains('show')) closeCrit(); }, 4000);
+  }
+
+  function closeCrit() {
+    document.getElementById('crit-overlay').classList.remove('show');
+    document.getElementById('particles').innerHTML = '';
+  }
+
+  function spawnParticles() {
+    const wrap = document.getElementById('particles');
+    wrap.innerHTML = '';
+    const colors = ['#D4AF37','#F0D060','#2ECC71','#fff','#E67E22'];
+    for (let i = 0; i < 50; i++) {
+      const p = document.createElement('div');
+      p.className = 'particle';
+      p.style.cssText = `left:${Math.random()*100}%;background:${colors[i%colors.length]};width:${2+Math.random()*4}px;height:${2+Math.random()*4}px;animation-duration:${0.8+Math.random()*1.6}s;animation-delay:${Math.random()*0.4}s;`;
+      wrap.appendChild(p);
+    }
+  }
+
+  function addHistory(suc, rolls, raw, fant) {
+    const fp = getFinalPool();
+    const allS = !fant && rolls.length >= 2 && rolls.every(v => v >= 4);
+    const allF = !fant && rolls.length >= 2 && rolls.every(v => v < 4);
+    let tagCls = suc > 0 ? 'suc' : 'fail';
+    let tagTxt = suc > 0 ? suc + ' suc.' : 'Falha';
+    if (allS)  { tagCls = 'crit';  tagTxt = 'Crítico'; }
+    if (allF)  { tagCls = 'fcrit'; tagTxt = 'F.Crit'; }
+    if (fant)  { tagCls = 'fant';  tagTxt = 'Fantasma'; }
+    history.unshift({ suc, rolls, raw, fant, fp, tagCls, tagTxt });
+    if (history.length > 8) history.pop();
+    renderHistory();
+  }
+
+  function renderHistory() {
+    const list = document.getElementById('history-list');
+    if (!history.length) {
+      list.innerHTML = `<div style="font-family:'Barlow Condensed';font-size:11px;letter-spacing:2px;color:var(--muted);text-align:center;padding:8px;text-transform:uppercase;font-style:italic;">Nenhuma rolagem ainda</div>`;
+      return;
+    }
+    list.innerHTML = history.map(h => `
+      <div class="hi">
+        <div class="hi-suc ${h.suc > 0 ? 'has' : h.fant ? 'fant' : 'none'}">${h.suc}</div>
+        <div class="hi-pool">${h.fp}d6</div>
+        <div class="hi-dice">[${h.rolls.join(', ')}]${h.fant ? ` ← [${h.raw.join(', ')}]` : ''}</div>
+        <div class="hi-tag ${h.tagCls}">${h.tagTxt}</div>
+      </div>`).join('');
+  }
+
+  function clearHistory() { history = []; renderHistory(); }
+
+  buildPoolPips();
+  updatePreview();
+</script>
+</body>
+</html>
