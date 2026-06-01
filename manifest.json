@@ -1,0 +1,12 @@
+{
+  "name": "Campo de Glória",
+  "version": "1.0.0",
+  "manifest_version": 1,
+  "action": {
+    "title": "Campo de Glória",
+    "icon": "/icon.svg",
+    "popover": "/action.html",
+    "height": 600,
+    "width": 360
+  }
+}
