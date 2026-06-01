@@ -5,7 +5,7 @@
   "action": {
     "title": "Campo de Glória",
     "icon": "/icon.svg",
-    "popover": "/action.html",
+    "popover": "/index.html",
     "height": 600,
     "width": 360
   }
